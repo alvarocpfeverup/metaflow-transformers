@@ -21,7 +21,7 @@ jobs:
 
    - name: Generate PR Description
      id: generate_desc
-     uses: alvarocperez/pull-request-description@v1.0.0
+     uses: alvarocperez/pull-request-description@v1.0.1
      with:
        api_key: ${{ secrets.OPENAI_API_KEY }}
        prompt: "Analyze the following changes and generate a detailed PR description in markdown. Include sections for: Summary of changes, Technical impact, Additional notes."
