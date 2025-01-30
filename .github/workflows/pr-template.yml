@@ -37,13 +37,8 @@ jobs:
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const description = `${{ toJSON(steps.generate_desc.outputs.description) }}`;
-          await github.rest.pulls.update({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
-            body: JSON.parse(description)
-          });
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_DESCRIPTION: ${{ steps.generate_desc.outputs.description }}
+      run: |
+        gh pr edit ${{ github.event.pull_request.number }} --body "$PR_DESCRIPTION"
