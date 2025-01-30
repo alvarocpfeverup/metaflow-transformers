@@ -29,11 +29,12 @@ jobs:
       with:
         api_key: ${{ secrets.OPENAI_API_KEY }}
         prompt: |
-          Analyze the code changes and generate a PR description in markdown with:
+          Analyze the code changes and generate a PR description with:
           - Summary of changes
           - Technical implementation details
           - Testing requirements
           - Use no more than 150 words
+          - The output will be writen to GitHub so use a valid MD
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
