@@ -35,6 +35,7 @@ jobs:
           - Testing requirements
           - Use no more than 150 words
           - The output will be writen to GitHub so use a valid MD
+          - Do not include markdown tokens like ```markdown, just start with the text
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
