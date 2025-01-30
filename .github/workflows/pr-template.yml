@@ -33,6 +33,7 @@ jobs:
           - Summary of changes
           - Technical implementation details
           - Testing requirements
+          - Use no more than 150 words
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
