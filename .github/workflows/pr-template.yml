@@ -60,10 +60,16 @@ jobs:
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
+      uses: actions/github-script@v6
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
         PR_DESCRIPTION: ${{ steps.generate_desc.outputs.description }}
-      run: |
-        echo "$PR_DESCRIPTION" > pr_description.md
-        gh pr edit $PR_NUMBER --body-file pr_description.md
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { owner, repo } = context.repo;
+          await github.rest.pulls.update({
+            owner,
+            repo,
+            pull_number: context.payload.pull_request.number,
+            body: process.env.PR_DESCRIPTION
+          });
