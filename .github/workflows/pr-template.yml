@@ -3,6 +3,7 @@ name: Generate PR Description
 on:
   pull_request:
     types: [opened, edited, synchronize]
+  workflow_dispatch:
 
 jobs:
   generate-description:
