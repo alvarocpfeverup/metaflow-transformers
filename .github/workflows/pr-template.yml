@@ -1,39 +1,53 @@
 name: Generate PR Description
 
 on:
- pull_request:
-   types: [opened, edited, synchronize]
+  pull_request:
+    types: [opened, edited, synchronize]
 
 jobs:
- generate-description:
-   runs-on: ubuntu-latest
-   steps:
-   - name: Checkout code
-     uses: actions/checkout@v4
-     with:
-       fetch-depth: 2
+  generate-description:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
-   - name: Get Git Diff
-     id: git_diff
-     run: |
-       DIFF=$(git diff HEAD^ HEAD)
-       echo "diff=$(echo "$DIFF" | jq -sRr @uri)" >> $GITHUB_OUTPUT
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
 
-   - name: Generate PR Description
-     id: generate_desc
-     uses: alvarocperez/pull-request-description@v1.0.1
-     with:
-       api_key: ${{ secrets.OPENAI_API_KEY }}
-       prompt: "Analyze the following changes and generate a detailed PR description in markdown. Include sections for: Summary of changes, Technical impact, Additional notes."
-       git_diff: ${{ steps.git_diff.outputs.diff }}
+    - name: Get Git Diff
+      id: git_diff
+      run: |
+        DIFF=$(git diff HEAD^ HEAD)
+        echo "diff=$(echo "$DIFF" | jq -sRr @uri)" >> $GITHUB_OUTPUT
 
-   - name: Update PR Description
-     uses: actions/github-script@v6
-     with:
-       script: |
-         github.rest.pulls.update({
-           owner: context.repo.owner,
-           repo: context.repo.repo,
-           pull_number: context.issue.number,
-           body: `${{ steps.generate_desc.outputs.description }}`
-         });
+    - name: Generate PR Description
+      id: generate_desc
+      uses: alvarocperez/pull-request-description@v1.0.1
+      with:
+        api_key: ${{ secrets.OPENAI_API_KEY }}
+        prompt: |
+          Analyze the code changes and generate a PR description in markdown with:
+          - Summary of changes
+          - Technical implementation details
+          - Testing requirements
+        git_diff: ${{ steps.git_diff.outputs.diff }}
+
+    - name: Update PR Description
+      uses: actions/github-script@v6
+      with:
+        script: |
+          try {
+            const description = `${{ steps.generate_desc.outputs.description }}`;
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: description
+            });
+          } catch (error) {
+            console.error('Failed to update PR:', error);
+            core.setFailed(error.message);
+          }
