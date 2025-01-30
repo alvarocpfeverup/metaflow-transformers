@@ -32,10 +32,30 @@ jobs:
           Analyze the code changes and generate a PR description with:
           - Summary of changes
           - Technical implementation details
-          - Testing requirements
           - Use no more than 150 words
           - The output will be writen to GitHub so use a valid MD
           - Do not include markdown tokens like ```markdown, just start with the text
+          - Use the following template: (fill only the first two sections and leave the rest as is)
+          
+            ## Summary of changes
+          
+            ## Technical implementation details
+          
+            ## Testing requirements. Attach some images showing how you have tested the feature:
+          
+            ## Steps to execute before merge
+          
+            ## Steps to execute after merge
+          
+            ## Related with
+            - Relates to MLDP-XXX
+            - Closes MLDP-XXX
+
+            ## Developer Checklist
+            - [ ] Code follows the team standard (business terms, links to documentation, etc.)
+            - [ ] Flow name follows the standard
+            - [ ] Flow works with the latest version of the dependencies
+
         git_diff: ${{ steps.git_diff.outputs.diff }}
 
     - name: Update PR Description
