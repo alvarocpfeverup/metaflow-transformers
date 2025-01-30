@@ -39,15 +39,10 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          try {
-            const description = `${{ steps.generate_desc.outputs.description }}`;
-            await github.rest.pulls.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-              body: description
-            });
-          } catch (error) {
-            console.error('Failed to update PR:', error);
-            core.setFailed(error.message);
-          }
+          const description = `${{ toJSON(steps.generate_desc.outputs.description) }}`;
+          await github.rest.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+            body: JSON.parse(description)
+          });
