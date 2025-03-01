@@ -18,11 +18,11 @@ jobs:
       with:
         fetch-depth: 2
 
-    - name: Get Git Diff
+    - name: Get Git Diff and Save to File
       id: git_diff
       run: |
-        DIFF=$(git diff HEAD^ HEAD)
-        echo "diff=$(echo "$DIFF" | jq -sRr @uri)" >> $GITHUB_OUTPUT
+        git diff HEAD^ HEAD > pr_diff.txt
+        echo "diff_file=pr_diff.txt" >> $GITHUB_OUTPUT
 
     - name: Generate PR Description
       id: generate_desc
@@ -57,7 +57,7 @@ jobs:
             - [ ] Flow name follows the standard
             - [ ] Flow works with the latest version of the dependencies
 
-        git_diff: ${{ steps.git_diff.outputs.diff }}
+        git_diff_file: pr_diff.txt
 
     - name: Update PR Description
       uses: actions/github-script@v6
