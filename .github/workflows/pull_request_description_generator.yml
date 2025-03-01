@@ -2,7 +2,8 @@ name: Generate PR Description
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened]
+  workflow_dispatch:
 
 jobs:
   generate-description:
@@ -26,7 +27,7 @@ jobs:
 
     - name: Generate PR Description
       id: generate_desc
-      uses: alvarocperez/pull-request-description@v1.1.0-rc4
+      uses: alvarocperez/pull-request-description@v1.1.0
       with:
         api_key: ${{ secrets.OPENAI_API_KEY }}
         prompt: |
