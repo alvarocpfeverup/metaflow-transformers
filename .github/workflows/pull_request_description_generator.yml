@@ -1,0 +1,75 @@
+name: Generate PR Description
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  generate-description:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Get Git Diff
+      id: git_diff
+      run: |
+        DIFF=$(git diff HEAD^ HEAD)
+        echo "diff=$(echo "$DIFF" | jq -sRr @uri)" >> $GITHUB_OUTPUT
+
+    - name: Generate PR Description
+      id: generate_desc
+      uses: alvarocperez/pull-request-description@v1.0.4
+      with:
+        api_key: ${{ secrets.OPENAI_API_KEY }}
+        prompt: |
+          Analyze the code changes and generate a PR description with:
+          - Summary of changes
+          - Technical implementation details
+          - Use no more than 150 words
+          - The output will be writen to GitHub so use a valid MD
+          - Do not include markdown tokens like ```markdown, just start with the text
+          - Use the following template: (fill only the first two sections and leave the rest as is)
+
+            ## Summary of changes
+
+            ## Technical implementation details
+
+            ## Testing requirements. Attach some images showing how you have tested the feature:
+
+            ## Steps to execute before merge
+
+            ## Steps to execute after merge
+
+            ## Related with
+            - Relates to MLDP-XXX
+            - Closes MLDP-XXX
+
+            ## Developer Checklist
+            - [ ] Code follows the team standard (business terms, links to documentation, etc.)
+            - [ ] Flow name follows the standard
+            - [ ] Flow works with the latest version of the dependencies
+
+        git_diff: ${{ steps.git_diff.outputs.diff }}
+
+    - name: Update PR Description
+      uses: actions/github-script@v6
+      env:
+        PR_DESCRIPTION: ${{ steps.generate_desc.outputs.description }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { owner, repo } = context.repo;
+          await github.rest.pulls.update({
+            owner,
+            repo,
+            pull_number: context.payload.pull_request.number,
+            body: process.env.PR_DESCRIPTION
+          });
