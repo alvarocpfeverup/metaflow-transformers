@@ -1,0 +1,23 @@
+INSERT INTO PUBLIC.ADP_ENGINE_INNER_STATE (ID_PLAN, ID_SESSION, ID_VENUE, ID_CITY, DS_LABEL, ID_CURRENCY,
+                                                          NM_TICKET_PRICE, MUST_USE_TAX_BASE, DT_START_DATE,
+                                                          DT_END_DATE, ID_CHANNELS,
+                                                          NM_STRIKETHROUGH_PRICE, DS_POLICY_NAME,
+                                                          NM_RECOMMENDED_PRICE, NM_RECOMMENDED_PRICE_TAX_BASE,
+                                                          VAR_INNER_STATE_METADATA)
+SELECT ID_PLAN,
+       ID_SESSION,
+       ID_VENUE,
+       ID_CITY,
+       DS_LABEL,
+       ID_CURRENCY,
+       NM_TICKET_PRICE,
+       MUST_USE_TAX_BASE,
+       DT_START_DATE,
+       DT_END_DATE,
+       PARSE_JSON(ID_CHANNELS)              AS ID_CHANNELS,
+       NM_STRIKETHROUGH_PRICE,
+       DS_POLICY_NAME,
+       NM_RECOMMENDED_PRICE,
+       NM_RECOMMENDED_PRICE_TAX_BASE,
+       PARSE_JSON(VAR_INNER_STATE_METADATA) AS VAR_INNER_STATE_METADATA
+FROM (VALUES {FORMATTED_VALUES}) AS DATA ({FORMATTED_COLUMNS});
