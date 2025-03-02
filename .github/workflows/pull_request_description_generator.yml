@@ -26,7 +26,7 @@ jobs:
 
     - name: Generate PR Description
       id: generate_desc
-      uses: alvarocperez/pull-request-description@v1.1.0-rc4
+      uses: alvarocperez/pull-request-description@v1.1.1-rc1
       with:
         api_key: ${{ secrets.OPENAI_API_KEY }}
         prompt: |
