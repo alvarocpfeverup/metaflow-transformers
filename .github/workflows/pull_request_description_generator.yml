@@ -26,7 +26,7 @@ jobs:
 
     - name: Generate PR Description
       id: generate_desc
-      uses: alvarocperez/pull-request-description@v1.1.1-rc1
+      uses: alvarocperez/pull-request-description@v1.1.1-rc2
       with:
         api_key: ${{ secrets.OPENAI_API_KEY }}
         prompt: |
@@ -58,6 +58,8 @@ jobs:
             - [ ] Flow works with the latest version of the dependencies
 
         git_diff_file: pr_diff.txt
+      env:
+        ACTIONS_STEP_DEBUG: true
 
     - name: Update PR Description
       uses: actions/github-script@v6
